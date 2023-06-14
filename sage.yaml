@@ -1,0 +1,13 @@
+name: "mrrpro"
+version: "0.1.0"
+description: "Plugin for transferring and processing Micro Rain Radar Pro data"
+keywords: "radar, rain"
+authors: "Bobby Jackson"
+collaborators: "Max Grover, Joseph O'Brien, Paytsar Muradyan, Sujan Pal, Scott Collis"
+funding: "U.S. Department of Energy"
+license: "GNU GPL"
+homepage: ""
+source:
+  architectures:
+    - "linux/amd64"
+    - "linux/arm64"
