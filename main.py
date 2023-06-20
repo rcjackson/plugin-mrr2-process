@@ -86,17 +86,12 @@ def main(args):
         print("Serial connection to %s open" % args.device)
         thread = None
         with Plugin() as plugin:
-            published_this_hour = False
             while True:    
                 parse_mrr_signal(ser, plugin)
                 cur_time = datetime.now()
                 if cur_time.minute == 0:
-                    if published_this_hour == False:
-                        published_this_hour = True
-                        thread = threading.Thread(target=process_hour, args=(plugin,))
-                        thread.start()
-                else:
-                     published_this_hour = False
+                    thread = threading.Thread(target=process_hour, args=(plugin,))
+                    thread.start()
                 
 
 
