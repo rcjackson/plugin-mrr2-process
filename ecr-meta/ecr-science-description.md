@@ -29,7 +29,7 @@ To query the last hour of data, do:
 df = sage_data_client.query(
             start="-1h",
             filter={"name": "upload", "vsn": "W08D",
-                   "plugin": "task"},).set_index("timestamp")
+                    "task": "mrr2"},).set_index("timestamp")
 ```                   
 The names of the available files are in the *value* key of the dataframe. Both hourly .raw files and processed .nc files are uploaded to beehive so that the user can either use the processed data or apply their own processing to the raw data (i.e. with other MRR packages like ImProToo).
 
