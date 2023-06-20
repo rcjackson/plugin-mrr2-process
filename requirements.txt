@@ -1,0 +1,6 @@
+pywaggle
+pyserial
+xarray
+miepython
+netCDF4==1.6
+cftime==1.6
