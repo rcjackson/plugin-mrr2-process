@@ -87,11 +87,11 @@ def main(args):
         thread = None
         with Plugin() as plugin:
             while True:    
+                # Parse_mrr_signal will run to the end of the hour
+                # All we need to do is start up the processing thread every hour
                 parse_mrr_signal(ser, plugin)
-                cur_time = datetime.now()
-                if cur_time.minute == 0:
-                    thread = threading.Thread(target=process_hour, args=(plugin,))
-                    thread.start()
+                thread = threading.Thread(target=process_hour, args=(plugin,))
+                thread.start()
                 
 
 
