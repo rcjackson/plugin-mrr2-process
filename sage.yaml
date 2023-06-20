@@ -1,6 +1,6 @@
 name: "mrr2"
-version: "0.1.0"
-description: "Plugin for transferring and processing Micro Rain Radar Pro data"
+version: "0.1.1"
+description: "Plugin for transferring and processing Micro Rain Radar 2 data"
 keywords: "radar, rain"
 authors: "Bobby Jackson"
 collaborators: "Max Grover, Joseph O'Brien, Paytsar Muradyan, Sujan Pal, Scott Collis"
