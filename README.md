@@ -21,7 +21,9 @@ The MRR-2 plugin is built and run using the following command on the Waggle node
 sudo pluginctl run --debug --name mrrpro --selector zone=core $(sudo pluginctl build .)
 ```
 
-The MRR-2 plugin needs to run continuously to transfer the data from the MRR-2 via serial. It processes the retrieved data at hourly intervals at the top of every hour.
+The MRR-2 plugin needs to run continuously to transfer the data from the MRR-2 via serial. 
+
+To process the last hour of data available on beehive, add the --process argument when running main.py.
 
 # Data Query
 To query the last hour of data, do:

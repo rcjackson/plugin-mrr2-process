@@ -8,6 +8,8 @@ import threading
 import glob
 import os
 import shutil
+import sage_data_client
+import requests
 
 from waggle.plugin import Plugin
 from datetime import datetime, timezone, timedelta
@@ -63,17 +65,37 @@ def parse_mrr_signal(serial, plugin):
                     shutil.move(out_file_name, '/app/raw_files/' + out_file_name)
                     exit = True
 
+def readtofile(uurl, ff):
+    r = requests.get(uurl)
+    if r.status_code == 200:
+        print('Downloading %s' % uurl[-14:])
+        with open(ff, 'wb') as out:
+            for bits in r.iter_content():
+                out.write(bits)
+    
+    return True
 
-def process_hour(plugin):
+def process_hour():
     cur_time = datetime.now()
     previous_hour = cur_time - timedelta(hours=1)
-    wildcard = '/app/raw_files/%s*.raw' % datetime.strftime(previous_hour, "%y%m%d%H")
+    df = sage_data_client.query(
+            start="-1h",
+            filter={"vsn": "W057", "name": "upload", "task": "mrr2",
+                    }).set_index("timestamp")
+    if not os.path.exists('/app/raw_files/'):
+        os.makedirs('/app/raw_files/')
+    file_list = df['value'].values
+    for f in file_list:
+        if '.raw' in f:
+            last_file = f
+
+    out_name = os.path.join('/app/raw_files', last_file[-14:])
+    readtofile(last_file, out_name)
     fname_str = 'mrr2atmos.%s0000.nc' % datetime.strftime(previous_hour,
                                 '%Y%m%d_%H')
     subprocess.run(["python3", "RaProM_38.py", fname_str])
-    plugin.upload_file('/app/raw_files/' + fname_str)
-    for fi in glob.glob(wildcard):
-        os.remove(fi)
+    with Plugin() as plugin:
+        plugin.upload_file('/app/raw_files/' + fname_str)
     print("Published %s" % fname_str)
 
 
@@ -86,12 +108,17 @@ def main(args):
         print("Serial connection to %s open" % args.device)
         thread = None
         with Plugin() as plugin:
+            published_this_hour = False
             while True:    
-                # Parse_mrr_signal will run to the end of the hour
-                # All we need to do is start up the processing thread every hour
                 parse_mrr_signal(ser, plugin)
-                thread = threading.Thread(target=process_hour, args=(plugin,))
-                thread.start()
+                cur_time = datetime.now()
+                if cur_time.minute == 0:
+                    if published_this_hour == False:
+                        published_this_hour = True
+                        thread = threading.Thread(target=process_hour, args=(plugin,))
+                        thread.start()
+                else:
+                     published_this_hour = False
                 
 
 
@@ -108,5 +135,14 @@ if __name__ == "__main__":
             dest='timeout',
             default=1,
             help="Number of seconds before signal timeout.")
+    parser.add_argument("--process",
+            action='store_true',
+            default=False,
+            dest='process')
+
+
     args = parser.parse_args()
-    main(args)
+    if args.process is False:
+        main(args)
+    else:
+        process_hour()
