@@ -80,7 +80,7 @@ def process_hour():
     previous_hour = cur_time - timedelta(hours=1)
     df = sage_data_client.query(
             start="-1h",
-            filter={"vsn": "W057", "name": "upload", "task": "atmos-mrr2-raw",
+            filter={"vsn": "W057", "name": "upload", "task": "mrr2",
                     }).set_index("timestamp")
     if not os.path.exists('/app/raw_files/'):
         os.makedirs('/app/raw_files/')
