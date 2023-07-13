@@ -1,5 +1,5 @@
 name: "mrr2-process"
-version: "2023.7.12.1"
+version: "2023.7.13"
 description: "Plugin for processing Micro Rain Radar 2 data"
 keywords: "radar, rain"
 authors: "Bobby Jackson"

@@ -75,27 +75,29 @@ def readtofile(uurl, ff):
     
     return True
 
-def process_hour():
+def process_hour(args):
     cur_time = datetime.now()
     previous_hour = cur_time - timedelta(hours=1)
     df = sage_data_client.query(
-            start="-1h",
+            start="-%dh" % args.process,
             filter={"vsn": "W057", "name": "upload", "task": "mrr2",
                     }).set_index("timestamp")
     if not os.path.exists('/app/raw_files/'):
         os.makedirs('/app/raw_files/')
     file_list = df['value'].values
     for f in file_list:
+        last_file = None
         if '.raw' in f:
             last_file = f
-
-    out_name = os.path.join('/app/raw_files', last_file[-14:])
-    readtofile(last_file, out_name)
-    fname_str = 'mrr2atmos.%s0000.nc' % datetime.strftime(previous_hour,
-                                '%Y%m%d_%H')
-    subprocess.run(["python3", "RaProM_38.py", fname_str])
-    with Plugin() as plugin:
-        plugin.upload_file('/app/raw_files/' + fname_str)
+        if last_file is None:
+            continue
+        out_name = os.path.join('/app/raw_files', last_file[-14:])
+        readtofile(last_file, out_name)
+        fname_str = 'mrr2atmos.%s0000.nc' % datetime.strftime(previous_hour,
+                                    '%Y%m%d_%H')
+        subprocess.run(["python3", "RaProM_38.py", fname_str])
+        with Plugin() as plugin:
+            plugin.upload_file('/app/raw_files/' + fname_str)
     print("Published %s" % fname_str)
 
 
@@ -126,13 +128,13 @@ if __name__ == "__main__":
             default=1,
             help="Number of seconds before signal timeout.")
     parser.add_argument("--process",
-            action='store_true',
-            default=False,
+            type=int,
+            default=0,
             dest='process')
 
 
     args = parser.parse_args()
-    if args.process is False:
+    if args.process == 0 :
         main(args)
     else:
-        process_hour()
+        process_hour(args)
