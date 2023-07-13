@@ -102,7 +102,7 @@ def process_hour(args):
         subprocess.run(["python3", "RaProM_38.py", fname_str])
         with Plugin() as plugin:
             plugin.upload_file('/app/raw_files/' + fname_str)
-        os.remove(last_file)
+        os.remove(out_name)
     print("Published %s" % fname_str)
 
 
