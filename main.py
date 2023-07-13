@@ -135,11 +135,12 @@ if __name__ == "__main__":
     parser.add_argument("--process",
             type=int,
             default=0,
+            help="Number of files to process (0 for retrieve mode)",
             dest='process')
 
 
     args = parser.parse_args()
-    if args.process == 0 :
+    if args.process == 0:
         main(args)
     else:
         process_hour(args)
