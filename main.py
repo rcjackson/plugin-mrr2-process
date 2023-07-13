@@ -91,13 +91,18 @@ def process_hour(args):
             last_file = f
         if last_file is None:
             continue
-        out_name = os.path.join('/app/raw_files', last_file[-14:])
+        out_name = os.path.join('/app/raw_files', last_file[-16:])
         readtofile(last_file, out_name)
-        fname_str = 'mrr2atmos.%s0000.nc' % datetime.strftime(previous_hour,
-                                    '%Y%m%d_%H')
+        year = '20' + last_file[-16:-14]
+        month = last_file[-14:-12]
+        day = last_file[-12:-10]
+        hour = last_file[-10:-8]
+        date_str = '%s%s%s.%s0000' % (year, month, day, hour)
+        fname_str = 'mrr2atmos.%s.nc' % date_str
         subprocess.run(["python3", "RaProM_38.py", fname_str])
         with Plugin() as plugin:
             plugin.upload_file('/app/raw_files/' + fname_str)
+        os.remove(last_file)
     print("Published %s" % fname_str)
 
 
